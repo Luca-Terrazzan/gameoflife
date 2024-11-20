@@ -15,7 +15,7 @@ let grid = createEmptyGrid()
 let nextGrid = createEmptyGrid()
 
 function createRandomInitialState() {
-    const totalPoints = 800
+    const totalPoints = 1200
     for (let i = 0; i < totalPoints; i++) {
         const hPos = Math.floor(Math.random() * (CANVAS_WIDTH - 1))
         const vPos = Math.floor(Math.random() * (CANVAS_HEIGHT - 1))
@@ -105,4 +105,4 @@ function play() {
     nextGrid = createEmptyGrid()
 }
 
-setInterval(play, 50)
+setInterval(play, 10)
