@@ -1,0 +1,13 @@
+.main-container {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.screen {
+    background-color: beige;
+    height: 90vh;
+    width: 90vw;
+}
