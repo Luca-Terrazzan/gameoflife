@@ -3,6 +3,30 @@ console.log('starting...')
 const SCALE = 32
 const CANVAS_HEIGHT = Math.round(1080 / SCALE)
 const CANVAS_WIDTH = Math.round(1920 / SCALE)
+let startingCells = undefined
+let refreshRate = undefined
+let playInterval = undefined
+
+const cellsAmountEl = document.getElementById('cells')
+const refreshRateEl = document.getElementById('rr')
+
+function updateOptions() {
+    startingCells = +cellsAmountEl.value
+    refreshRate = +refreshRateEl.value
+    console.log('options updated to', startingCells, refreshRate)
+}
+updateOptions()
+
+cellsAmountEl.addEventListener("change", () => {
+    updateOptions()
+    createRandomInitialState()
+})
+
+refreshRateEl.addEventListener("change", () => {
+    updateOptions()
+    clearInterval(playInterval)
+    playInterval = setInterval(play, refreshRate)
+})
 
 function createEmptyGrid() {
     return Array.from(Array(CANVAS_WIDTH), () => Array(CANVAS_HEIGHT))
@@ -15,8 +39,10 @@ let grid = createEmptyGrid()
 let nextGrid = createEmptyGrid()
 
 function createRandomInitialState() {
-    const totalPoints = 1200
-    for (let i = 0; i < totalPoints; i++) {
+    grid = createEmptyGrid()
+    nextGrid = createEmptyGrid()
+    console.log('randomizing')
+    for (let i = 0; i < startingCells; i++) {
         const hPos = Math.floor(Math.random() * (CANVAS_WIDTH - 1))
         const vPos = Math.floor(Math.random() * (CANVAS_HEIGHT - 1))
         grid[hPos][vPos] = true
@@ -30,17 +56,17 @@ createRandomInitialState()
 function displayCell(x, y) {
     ctx.fillStyle = "#000000"
     ctx.beginPath();
-    ctx.arc(x*SCALE + SCALE/2, y*SCALE + SCALE/2, SCALE/2, 0, 2 * Math.PI);
+    ctx.arc(x * SCALE + SCALE / 2, y * SCALE + SCALE / 2, SCALE / 2, 0, 2 * Math.PI);
     ctx.fill()
 }
 
 function getNeighbours(x, y) {
     let count = 0
-    for (let xx = x-1; xx < x+2; xx++) {
-        for (let yy = y-1; yy < y+2; yy++) {
+    for (let xx = x - 1; xx < x + 2; xx++) {
+        for (let yy = y - 1; yy < y + 2; yy++) {
             if (xx < 0 || yy < 0) continue
             if (xx === x && yy === y) continue
-            if (xx > CANVAS_WIDTH -1|| yy > CANVAS_HEIGHT-1) continue
+            if (xx > CANVAS_WIDTH - 1 || yy > CANVAS_HEIGHT - 1) continue
             if (grid[xx][yy] === true) count++
         }
     }
@@ -61,9 +87,6 @@ function play() {
     for (let x = 0; x < CANVAS_WIDTH; x++) {
         for (let y = 0; y < CANVAS_HEIGHT; y++) {
             if (grid[x][y] === true) {
-                const neighbours = getNeighbours(x, y)
-                console.log('displaying point', x, y)
-                console.log('point has ', neighbours, ' neighbours')
                 displayCell(x, y)
             }
         }
@@ -87,12 +110,12 @@ function play() {
                     // console.log('survives')
                     nextGrid[x][y] = grid[x][y]
                 } else {
-                    console.log('dies of overpop')
+                    // console.log('dies of overpop')
                     nextGrid[x][y] = undefined
                 }
             } else {
                 if (neighbours === 3) {
-                    console.log('cell ', x, y, ' is dead, but is activated now')
+                    // console.log('cell ', x, y, ' is dead, but is activated now')
                     nextGrid[x][y] = true
                 }
                 // dead cell and nothing happens
@@ -105,4 +128,4 @@ function play() {
     nextGrid = createEmptyGrid()
 }
 
-setInterval(play, 10)
+playInterval = setInterval(play, refreshRate)
